@@ -9,7 +9,9 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/Applications/",
-                "/Users/jamesdelaney/Documents/Arduino"
+                "/Users/jamesdelaney/Documents/Arduino",
+                "/Applications/Arduino.app/Contents/Java/hardware/tools/avr/avr/include",
+                "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino"
             ],
             "forcedInclude": [],
             "cStandard": "gnu17",
