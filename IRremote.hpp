@@ -58,7 +58,7 @@
  * - NO_LED_FEEDBACK_CODE               This completely disables the LED feedback code for send and receive.
  * - IR_INPUT_IS_ACTIVE_HIGH            Enable it if you use a RF receiver, which has an active HIGH output signal.
  * - IR_SEND_DUTY_CYCLE_PERCENT         Duty cycle of IR send signal.
- * - MICROS_PER_TICK                    Resolution of the raw input buffer data. Corresponds to 2 pulses of each 26.3 ï¿½s at 38 kHz.
+ * - MICROS_PER_TICK                    Resolution of the raw input buffer data. Corresponds to 2 pulses of each 26.3 µs at 38 kHz.
  * - IR_USE_AVR_TIMER*                  Selection of timer to be used for generating IR receiving sample interval.
  */
 
@@ -300,7 +300,7 @@
 
 /*
  * Include the sources of all decoders here to enable compilation with macro values set by user program.
-
+ */
 #  if defined(DECODE_BOSEWAVE)
 #include "ir_BoseWave.hpp"
 #  endif
@@ -343,7 +343,7 @@
 
 #include "ir_Pronto.hpp" // pronto is an universal decoder and encoder
 
-#include "ir_Dish.hpp" // contains only sendDISH(unsigned long data, int nbits) */
+#include "ir_Dish.hpp" // contains only sendDISH(unsigned long data, int nbits)
 #endif // #if !defined(USE_IRREMOTE_HPP_AS_PLAIN_INCLUDE)
 
 /**
