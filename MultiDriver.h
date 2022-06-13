@@ -11,7 +11,7 @@
 #include <Arduino.h>
 #include "BasicStepperDriver.h"
 
-#define MAX_MOTORS 4    // a reasonable but arbitrary limit
+#define MAX_MOTORS 3    // a reasonable but arbitrary limit
 #define Motor BasicStepperDriver
 /*
  * Multi-motor group driver class.
@@ -41,6 +41,9 @@ protected:
     unsigned long last_action_end = 0;
 
 public:
+    struct Steps {
+        long steps[3];
+    };
     /*
      * Two-motor setup
      */
@@ -53,12 +56,6 @@ public:
     MultiDriver(Motor& motor1, Motor& motor2, Motor& motor3)
     :MultiDriver(3, new Motor* const[3]{&motor1, &motor2, &motor3})
     {};
-    /*
-     * Four-motor setup 
-     */
-    MultiDriver(Motor& motor1, Motor& motor2, Motor& motor3, Motor& motor4)
-    :MultiDriver(4, new Motor* const[4]{&motor1, &motor2, &motor3, &motor4})
-    {};
     unsigned short getCount(void){
         return count;
     }
@@ -66,25 +63,29 @@ public:
         return *motors[index];
     }
     /*
+     * Initialize pins, calculate timings etc
+     */
+    void begin(float rpm=60, short microsteps=1);
+    /*
      * Move the motors a given number of steps.
      * positive to move forward, negative to reverse
      */
-    void move(long steps1, long steps2, long steps3, long steps4=0);
-    void rotate(int deg1, int deg2, int deg3, int deg4=0){
-        rotate((long)deg1, (long)deg2, (long)deg3, (long)deg4);
+    void move(long steps1, long steps2, long steps3=0);
+    void rotate(int deg1, int deg2, int deg3=0){
+        rotate((long)deg1, (long)deg2, (long)deg3);
     };
-    void rotate(long deg1, long deg2, long deg3, long deg4=0);
-    void rotate(double deg1, double deg2, double deg3, double deg4=0);
+    void rotate(long deg1, long deg2, long deg3=0);
+    void rotate(double deg1, double deg2, double deg3=0);
 
     /*
      * Motor movement with external control of timing
      */
-    virtual void startMove(long steps1, long steps2, long steps3, long steps4=0);
-    void startRotate(int deg1, int deg2, int deg3, int deg4=0){
-        startRotate((long)deg1, (long)deg2, (long)deg3, (long)deg4);
+    virtual void startMove(long steps1, long steps2, long steps3=0);
+    void startRotate(int deg1, int deg2, int deg3=0){
+        startRotate((long)deg1, (long)deg2, (long)deg3);
     };
-    void startRotate(long deg1, long deg2, long deg3, long deg4=0);
-    void startRotate(double deg1, double deg2, double deg3, double deg4=0);
+    void startRotate(long deg1, long deg2, long deg3=0);
+    void startRotate(double deg1, double deg2, double deg3=0);
     /*
      * Toggle step and return time until next change is needed (micros)
      */
@@ -94,14 +95,23 @@ public:
      */
     void startBrake(void);
     /*
+     * Immediate stop
+     * Returns the number of steps remaining.
+     */
+    Steps stop(void);
+    /*
      * State querying
      */
     bool isRunning(void);
-     
+
     /*
      * Set the same microstepping level on all motors
      */
     void setMicrostep(unsigned microsteps);
+    /*
+     * Set all motors RPM (1-200 is a reasonable range)
+     */
+    void setRPM(float rpm);
     /*
      * Turn all motors on or off
      */

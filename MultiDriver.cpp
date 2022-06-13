@@ -13,8 +13,8 @@
 /*
  * Initialize motor parameters
  */
-void MultiDriver::startMove(long steps1, long steps2, long steps3, long steps4){
-    long steps[4] = {steps1, steps2, steps3, steps4};
+void MultiDriver::startMove(long steps1, long steps2, long steps3){
+    long steps[3] = {steps1, steps2, steps3};
     /*
      * Initialize state for all active motors
      */
@@ -70,6 +70,19 @@ void MultiDriver::startBrake(void){
     )
 }
 /*
+ * Immediate stop
+ * Returns the number of steps remaining.
+ */
+MultiDriver::Steps MultiDriver::stop(void){
+    Steps retval = Steps();
+    FOREACH_MOTOR(
+        if (event_timers[i] > 0){
+            retval.steps[i] = motors[i]->stop();
+        }
+    )
+    return retval;
+}
+/*
  * State querying
  */
 bool MultiDriver::isRunning(void){
@@ -84,35 +97,48 @@ bool MultiDriver::isRunning(void){
 }
 
 /*
+ * Initialize pins, calculate timings etc
+ */
+void MultiDriver::begin(float rpm, short microsteps){
+    FOREACH_MOTOR(
+        motors[i]->begin(rpm, microsteps);
+    )
+}
+
+/*
  * Move each motor the requested number of steps, in parallel
  * positive to move forward, negative to reverse, 0 to remain still
  */
-void MultiDriver::move(long steps1, long steps2, long steps3, long steps4){
-    startMove(steps1, steps2, steps3, steps4);
+void MultiDriver::move(long steps1, long steps2, long steps3){
+    startMove(steps1, steps2, steps3);
     while (!ready){
         nextAction();
     }
 }
 
 #define CALC_STEPS(i, deg) ((motors[i] && deg) ? motors[i]->calcStepsForRotation(deg) : 0)
-void MultiDriver::rotate(long deg1, long deg2, long deg3, long deg4){
-    move(CALC_STEPS(0, deg1), CALC_STEPS(1, deg2), CALC_STEPS(2, deg3), CALC_STEPS(3, deg4));
+void MultiDriver::rotate(long deg1, long deg2, long deg3){
+    move(CALC_STEPS(0, deg1), CALC_STEPS(1, deg2), CALC_STEPS(2, deg3));
 }
 
-void MultiDriver::rotate(double deg1, double deg2, double deg3, double deg4){
-    move(CALC_STEPS(0, deg1), CALC_STEPS(1, deg2), CALC_STEPS(2, deg3), CALC_STEPS(3, deg4));
+void MultiDriver::rotate(double deg1, double deg2, double deg3){
+    move(CALC_STEPS(0, deg1), CALC_STEPS(1, deg2), CALC_STEPS(2, deg3));
 }
 
-void MultiDriver::startRotate(long deg1, long deg2, long deg3, long deg4){
-    startMove(CALC_STEPS(0, deg1), CALC_STEPS(1, deg2), CALC_STEPS(2, deg3), CALC_STEPS(3, deg4));
+void MultiDriver::startRotate(long deg1, long deg2, long deg3){
+    startMove(CALC_STEPS(0, deg1), CALC_STEPS(1, deg2), CALC_STEPS(2, deg3));
 }
 
-void MultiDriver::startRotate(double deg1, double deg2, double deg3, double deg4){
-    startMove(CALC_STEPS(0, deg1), CALC_STEPS(1, deg2), CALC_STEPS(2, deg3), CALC_STEPS(3, deg3));
+void MultiDriver::startRotate(double deg1, double deg2, double deg3){
+    startMove(CALC_STEPS(0, deg1), CALC_STEPS(1, deg2), CALC_STEPS(2, deg3));
 }
 
 void MultiDriver::setMicrostep(unsigned microsteps){
     FOREACH_MOTOR(motors[i]->setMicrostep(microsteps));
+}
+
+void MultiDriver::setRPM(float rpm){
+    FOREACH_MOTOR(motors[i]->setRPM(rpm));
 }
 
 void MultiDriver::enable(void){
