@@ -6,16 +6,21 @@ extern void cylon() {
     strip1.sendPixels(LEDS_PER_STRIP, leds);
     strip2.sendPixels(LEDS_PER_STRIP, leds);
     strip3.sendPixels(LEDS_PER_STRIP, leds);
-   /* strip12.sendPixels(LEDS_PER_STRIP, leds); 
-    strip13.sendPixels(LEDS_PER_STRIP, leds);
-    strip5.sendPixels(LEDS_PER_STRIP, leds); 
-    strip6.sendPixels(LEDS_PER_STRIP, leds); 
-    strip15.sendPixels(LEDS_PER_STRIP, leds); 
     strip4.sendPixels(LEDS_PER_STRIP, leds);
-    strip18.sendPixels(LEDS_PER_STRIP, leds); 
-    strip17.sendPixels(LEDS_PER_STRIP, leds); 
+    strip5.sendPixels(LEDS_PER_STRIP, leds);
+    strip6.sendPixels(LEDS_PER_STRIP, leds);
+    strip7.sendPixels(LEDS_PER_STRIP, leds);
+    strip8.sendPixels(LEDS_PER_STRIP, leds);
+    strip9.sendPixels(LEDS_PER_STRIP, leds);
     strip10.sendPixels(LEDS_PER_STRIP, leds);
-    strip8.sendPixels(LEDS_PER_STRIP, leds);*/
+    strip11.sendPixels(LEDS_PER_STRIP, leds);
+    strip12.sendPixels(LEDS_PER_STRIP, leds);
+    strip13.sendPixels(LEDS_PER_STRIP, leds);
+    strip14.sendPixels(LEDS_PER_STRIP, leds);
+    strip15.sendPixels(LEDS_PER_STRIP, leds);
+    strip16.sendPixels(LEDS_PER_STRIP, leds);
+    strip17.sendPixels(LEDS_PER_STRIP, leds);
+    strip18.sendPixels(LEDS_PER_STRIP, leds);
     
   }
   for(int j = 4; j > 0; j--) {
@@ -25,22 +30,27 @@ extern void cylon() {
     strip1.sendPixels(LEDS_PER_STRIP, leds);
     strip2.sendPixels(LEDS_PER_STRIP, leds);
     strip3.sendPixels(LEDS_PER_STRIP, leds);
-    /*strip12.sendPixels(LEDS_PER_STRIP, leds); 
-    strip13.sendPixels(LEDS_PER_STRIP, leds);
-    strip5.sendPixels(LEDS_PER_STRIP, leds); 
-    strip6.sendPixels(LEDS_PER_STRIP, leds); 
-    strip15.sendPixels(LEDS_PER_STRIP, leds); 
     strip4.sendPixels(LEDS_PER_STRIP, leds);
-    strip18.sendPixels(LEDS_PER_STRIP, leds); 
-    strip17.sendPixels(LEDS_PER_STRIP, leds); 
+    strip5.sendPixels(LEDS_PER_STRIP, leds);
+    strip6.sendPixels(LEDS_PER_STRIP, leds);
+    strip7.sendPixels(LEDS_PER_STRIP, leds);
+    strip8.sendPixels(LEDS_PER_STRIP, leds);
+    strip9.sendPixels(LEDS_PER_STRIP, leds);
     strip10.sendPixels(LEDS_PER_STRIP, leds);
-    strip8.sendPixels(LEDS_PER_STRIP, leds);*/
+    strip11.sendPixels(LEDS_PER_STRIP, leds);
+    strip12.sendPixels(LEDS_PER_STRIP, leds);
+    strip13.sendPixels(LEDS_PER_STRIP, leds);
+    strip14.sendPixels(LEDS_PER_STRIP, leds);
+    strip15.sendPixels(LEDS_PER_STRIP, leds);
+    strip16.sendPixels(LEDS_PER_STRIP, leds);
+    strip17.sendPixels(LEDS_PER_STRIP, leds);
+    strip18.sendPixels(LEDS_PER_STRIP, leds);
   }
 
   strip1.clear(LEDS_PER_STRIP);
   strip2.clear(LEDS_PER_STRIP);
   strip3.clear(LEDS_PER_STRIP);
-  /*strip4.clear(LEDS_PER_STRIP);
+  strip4.clear(LEDS_PER_STRIP);
   strip5.clear(LEDS_PER_STRIP);
   strip6.clear(LEDS_PER_STRIP);
   strip7.clear(LEDS_PER_STRIP);
@@ -54,15 +64,15 @@ extern void cylon() {
   strip15.clear(LEDS_PER_STRIP);
   strip16.clear(LEDS_PER_STRIP);
   strip17.clear(LEDS_PER_STRIP);
-  strip18.clear(LEDS_PER_STRIP);*/
+  strip18.clear(LEDS_PER_STRIP);
 
 }
 
-extern void LEDSoff() {
+extern void LEDsoff() {
   strip1.clear(LEDS_PER_STRIP);
   strip2.clear(LEDS_PER_STRIP);
   strip3.clear(LEDS_PER_STRIP);
-  /*strip4.clear(LEDS_PER_STRIP);
+  strip4.clear(LEDS_PER_STRIP);
   strip5.clear(LEDS_PER_STRIP);
   strip6.clear(LEDS_PER_STRIP);
   strip7.clear(LEDS_PER_STRIP);
@@ -76,5 +86,5 @@ extern void LEDSoff() {
   strip15.clear(LEDS_PER_STRIP);
   strip16.clear(LEDS_PER_STRIP);
   strip17.clear(LEDS_PER_STRIP);
-  strip18.clear(LEDS_PER_STRIP);*/
+  strip18.clear(LEDS_PER_STRIP);
 }

@@ -14,8 +14,8 @@
 /*
  * Initialize motor parameters
  */
-void SyncDriver::startMove(long steps1, long steps2, long steps3){
-    long steps[3] = {steps1, steps2, steps3};
+void SyncDriver::startMove(long steps1, long steps2, long steps3, long steps4, long steps5, long steps6, long steps7, long steps8, long steps9, long steps10, long steps11, long steps12){
+    long steps[12] = {steps1, steps2, steps3, steps4, steps5, steps6, steps7, steps8, steps9, steps10, steps11, steps12};
     /*
      * find which motor would take the longest to finish,
      */

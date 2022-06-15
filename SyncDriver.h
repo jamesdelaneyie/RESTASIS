@@ -21,6 +21,6 @@ class SyncDriver : public MultiDriver {
 
 public:
 
-    void startMove(long steps1, long steps2, long steps3=0) override;
+    void startMove(long steps1, long steps2, long steps3, long steps4=0, long steps5=0, long steps6=0, long steps7=0, long steps8=0, long steps9=0, long steps10=0, long steps11=0, long steps12=0) override;
 };
 #endif // SYNC_DRIVER_H

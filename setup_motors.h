@@ -11,27 +11,44 @@ bool motorsPowered = false;
 #define MOTOR_DECEL 30
 #define MICROSTEPS 8
 
-BasicStepperDriver stepper1(MOTOR_STEPS, 2, 3);
-BasicStepperDriver stepper2(MOTOR_STEPS, 4, 5);
+//BasicStepperDriver stepper1(MOTOR_STEPS, DIR, STEP);
+//LEDS D2, D3, D4
+BasicStepperDriver stepper1(MOTOR_STEPS, 5, 6);
+BasicStepperDriver stepper2(MOTOR_STEPS, 7, 8);
+
+//LEDS D10, D11, D12
 BasicStepperDriver stepper3(MOTOR_STEPS, 13, 14);
 BasicStepperDriver stepper4(MOTOR_STEPS, 15, 16);
-/*BasicStepperDriver stepper5(MOTOR_STEPS, 10, 11);
-BasicStepperDriver stepper6(MOTOR_STEPS, 12, 13);
-BasicStepperDriver stepper7(MOTOR_STEPS, 14, 15);
-BasicStepperDriver stepper8(MOTOR_STEPS, 16, 17);
-BasicStepperDriver stepper9(MOTOR_STEPS, 18, 19);
-BasicStepperDriver stepper10(MOTOR_STEPS, 20, 21);
-BasicStepperDriver stepper11(MOTOR_STEPS, 22, 23);
-BasicStepperDriver stepper12(MOTOR_STEPS, 24, 25);*/
+
+//LEDS D19, D20, D21
+BasicStepperDriver stepper5(MOTOR_STEPS, 21, 22);
+BasicStepperDriver stepper6(MOTOR_STEPS, 23, 24);
+
+//LEDS D51, D52, D53
+BasicStepperDriver stepper7(MOTOR_STEPS, 51, 52); //Not Working 
+BasicStepperDriver stepper8(MOTOR_STEPS, 49, 50); 
+/* BasicStepperDriver stepper7(MOTOR_STEPS, 49, 50); BasicStepperDriver stepper8(MOTOR_STEPS, 51, 52);*/
+
+//LEDS D45, D46, D47
+BasicStepperDriver stepper9(MOTOR_STEPS, 41, 42);
+BasicStepperDriver stepper10(MOTOR_STEPS, 43, 44);
+
+//LEDS A13, A14, A15
+BasicStepperDriver stepper11(MOTOR_STEPS, 66, 65);
+BasicStepperDriver stepper12(MOTOR_STEPS, 64, 63);
 
 
-SyncDriver controller(stepper1, stepper2);
-SyncDriver controller2(stepper3, stepper4);
-/*MultiDriver controller2(stepper3, stepper4);
-MultiDriver controller3(stepper5, stepper6);
-MultiDriver controller4(stepper7, stepper8);
-MultiDriver controller5(stepper9, stepper10);
-MultiDriver controller6(stepper11, stepper12);*/
+//62-A8  STEP
+//63-A9  DIR
+//64-A10 STEP
+//65-A11 DIR 
+//66-A12 —————
+//67-A13-K5 LED
+//68-A14-K6 LED
+//69-A15-K7 LED
+
+
+SyncDriver controllerA(stepper1, stepper2, stepper3, stepper4, stepper5, stepper6, stepper7, stepper8, stepper9, stepper10, stepper11, stepper12);
 
 
 
@@ -48,43 +65,48 @@ extern void setupMotors() {
   stepper4.begin(RPM, MICROSTEPS);
   stepper4.setSpeedProfile(stepper4.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
 
-  controller.rotate(-30, 30);
-  controller2.rotate(-30, 30);
-  //stepper1.2move(30);
-  //stepper1.move(-30);
-  //stepper1.rotate(30);
-  //stepper1.rotate(-30);
-
-  //stepper2.rotate(-30);
- /* stepper3.begin(RPM, MICROSTEPS);
-  stepper3.setSpeedProfile(stepper1.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
-  
-  stepper4.begin(RPM, MICROSTEPS);
-  stepper4.setSpeedProfile(stepper1.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
-
   stepper5.begin(RPM, MICROSTEPS);
-  stepper5.setSpeedProfile(stepper1.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
+  stepper5.setSpeedProfile(stepper5.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
 
   stepper6.begin(RPM, MICROSTEPS);
-  stepper6.setSpeedProfile(stepper1.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
+  stepper6.setSpeedProfile(stepper6.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
 
   stepper7.begin(RPM, MICROSTEPS);
-  stepper7.setSpeedProfile(stepper1.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
+  stepper7.setSpeedProfile(stepper7.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
 
   stepper8.begin(RPM, MICROSTEPS);
-  stepper8.setSpeedProfile(stepper1.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
+  stepper8.setSpeedProfile(stepper8.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
 
   stepper9.begin(RPM, MICROSTEPS);
-  stepper9.setSpeedProfile(stepper1.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
+  stepper9.setSpeedProfile(stepper9.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
 
   stepper10.begin(RPM, MICROSTEPS);
-  stepper10.setSpeedProfile(stepper1.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
+  stepper10.setSpeedProfile(stepper10.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
 
   stepper11.begin(RPM, MICROSTEPS);
-  stepper11.setSpeedProfile(stepper1.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
+  stepper11.setSpeedProfile(stepper11.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
 
   stepper12.begin(RPM, MICROSTEPS);
-  stepper12.setSpeedProfile(stepper1.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);*/
+  stepper12.setSpeedProfile(stepper12.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
+
+
+
+  controllerA.rotate(-20, 20, -20, 20, -20, 20, -20, 20, -20, 20, -20, 20);
+
+  delay(2000);
+
+  controllerA.rotate(20, -20, 20, -20, 20, -20, 20, -20, 20, -20, 20, -20);
+
+  delay(2000);
+
+  controllerA.rotate(-20, 20, -20, 20, -20, 20, -20, 20, -20, 20, -20, 20);
+
+  delay(2000);
+
+  controllerA.rotate(20, -20, 20, -20, 20, -20, 20, -20, 20, -20, 20, -20);
+
+  delay(2000);
+  
 
   motorsPowered = true;
 }

@@ -8,7 +8,7 @@ int startup_sound_melody[] = {
 };
 
 int startup_sound_noteDurations[] = {
-  4,4,4,8,8,4
+  8,8,8,16,16,8
 };
 
 unsigned long previousStartupMusicMillis = 0;

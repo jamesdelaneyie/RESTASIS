@@ -1,4 +1,4 @@
-/*
+
 #include "IRremote.h"
 //********** Define the IR Remote Commands
 #define POWER 0x00FF629D
@@ -20,4 +20,4 @@ decode_results results;
 uint16_t resultCode;
 uint16_t lastValue;
 
-long choice; */
+long choice; 

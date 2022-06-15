@@ -2,36 +2,39 @@
 
 //********** LEDs Setup *************/
 #define LED_STRIPS 18
-#define LEDS_PER_STRIP 72
+#define LEDS_PER_STRIP 70
 
-ws2812b<H,4>  strip1;
-ws2812b<H,5>  strip2;
-ws2812b<H,6>  strip3;
+//bool hasChanged = false;
 
-
+/* Working */
+ws2812b<G,5>  strip1;
+ws2812b<E,4>  strip2;
+ws2812b<E,5>  strip3;
+/* Working */
 ws2812b<B,4>  strip4;
 ws2812b<B,5>  strip5;
 ws2812b<B,6>  strip6;
-
-/*
-ws2812b<A,2>  strip4;
-ws2812b<A,1>  strip5;
-ws2812b<A,3>  strip6;
-
+/* Working */
+ws2812b<D,1>  strip7;
+ws2812b<D,2>  strip8;
+ws2812b<D,3>  strip9;
 
 
 ws2812b<L,1>  strip10;
 ws2812b<L,2>  strip11;
 ws2812b<L,3>  strip12;
 
-ws2812b<G,2>  strip13;
-ws2812b<G,1>  strip14;
-ws2812b<D,7>  strip15;
 
+/* Working */
+ws2812b<D,7>  strip13;
+ws2812b<G,1>  strip14;
+ws2812b<G,2>  strip15;
+/* Working */
 ws2812b<K,5>  strip16;
 ws2812b<K,6>  strip17;
 ws2812b<K,7>  strip18;
-*/
+
+
 
 grb leds[LEDS_PER_STRIP];
 //grb leds[LEDS_PER_STRIP];
@@ -109,7 +112,7 @@ void updateBottomRightLeds(grb ledArray[]) {
 
 */
 
-uint8_t maxBrightness = 63;
+
 
 float hue = 0.0;
 
@@ -128,6 +131,42 @@ float* hsv2rgb(float h, float s, float b, float* rgb) {
   return rgb;
 }
 
+void setColor(float *rgb){
+  color[0] = rgb[0];
+  color[1] = rgb[1];
+  color[2] = rgb[2];
+}
+
+void hueCycle(grb ledArray[]) {
+  for (int i = 0; i < LEDS_PER_STRIP; i++) {
+
+    setColor(hsv2rgb(hue, 1.0, 0.25, color));
+
+    leds[i].r = color[0];
+    leds[i].g = color[1];
+    leds[i].b = color[2];
+
+    //ledArray[i].set(hsv2rgb(hue, 1.0, 1.0, color));
+    hue += 0.01;
+    if (hue > 1.0) hue -= 1.0;
+  }
+}
+
+
+
+/*
+void ledsColor(float hue, float saturation, float brightness) {
+  
+  setColor(hsv2rgb(hue, saturation, brightness, color));
+  for (int i = 0; i < LEDS_PER_STRIP; i++) {
+    leds[i].r = color[0];
+    leds[i].g = color[1];
+    leds[i].b = color[2];
+  }
+  updateAllStrips(leds);
+}*/
+
+uint8_t maxBrightness = 60;
 
 void updateAllStrips(grb allLEDS[]) {
   strip1.sendPixels(LEDS_PER_STRIP, leds);
@@ -136,7 +175,7 @@ void updateAllStrips(grb allLEDS[]) {
   strip4.sendPixels(LEDS_PER_STRIP, leds);
   strip5.sendPixels(LEDS_PER_STRIP, leds);
   strip6.sendPixels(LEDS_PER_STRIP, leds);
-  /*strip7.sendPixels(LEDS_PER_STRIP, leds);
+  strip7.sendPixels(LEDS_PER_STRIP, leds);
   strip8.sendPixels(LEDS_PER_STRIP, leds);
   strip9.sendPixels(LEDS_PER_STRIP, leds);
   strip10.sendPixels(LEDS_PER_STRIP, leds);
@@ -147,71 +186,59 @@ void updateAllStrips(grb allLEDS[]) {
   strip15.sendPixels(LEDS_PER_STRIP, leds);
   strip16.sendPixels(LEDS_PER_STRIP, leds);
   strip17.sendPixels(LEDS_PER_STRIP, leds);
-  strip18.sendPixels(LEDS_PER_STRIP, leds);*/
-}
-
-
-
-void setColor(float *rgb){
-  color[0] = rgb[0];
-  color[1] = rgb[1];
-  color[2] = rgb[2];
-}
-
-void ledsColor(float hue, float saturation, float brightness) {
-  setColor(hsv2rgb(hue, saturation, brightness, color));
-  for (int i = 0; i < LEDS_PER_STRIP; i++) {
-    leds[i].r = color[0];
-    leds[i].g = color[1];
-    leds[i].b = color[2];
-  }
-  updateAllStrips(leds);
+  strip18.sendPixels(LEDS_PER_STRIP, leds);
 }
 
 void ledsSimpleColor(char color) {
-  for (int i = 0; i < LEDS_PER_STRIP; i++) {
-    if(color == 'white') {
-      leds[i].r = maxBrightness;
-      leds[i].g = maxBrightness;
-      leds[i].b = maxBrightness;
-    } else if(color == 'red') {
-      leds[i].r = maxBrightness;
-      leds[i].g = 0;
-      leds[i].b = 0;
-    } else if(color == 'green') {
-      leds[i].r = 0;
-      leds[i].g = maxBrightness;
-      leds[i].b = 0;
-    } else if(color == 'blue') {
-      leds[i].r = 0;
-      leds[i].g = 0;
-      leds[i].b = maxBrightness;
-    } else if(color == 'yellow') {
-      leds[i].r = maxBrightness;
-      leds[i].g = maxBrightness;
-      leds[i].b = 0;
-    } else if(color == 'cyan') {
-      leds[i].r = 0;
-      leds[i].g = maxBrightness;
-      leds[i].b = maxBrightness;
-    } else if(color == 'magenta') {
-      leds[i].r = maxBrightness;
-      leds[i].g = 0;
-      leds[i].b = maxBrightness;
-    } else if(color == 'orange') {
-      leds[i].r = maxBrightness;
-      leds[i].g = maxBrightness / 2;
-      leds[i].b = 0;
-    } else if(color == 'purple') {
-      leds[i].r = maxBrightness / 2;
-      leds[i].g = 0;
-      leds[i].b = maxBrightness;
-    } else if(color == 'pink') {
-      leds[i].r = maxBrightness;
-      leds[i].g = maxBrightness / 2;
-      leds[i].b = maxBrightness / 2;
+  //if(hasChanged == false) {
+      for (int i = 0; i < LEDS_PER_STRIP; i++) {
+        if(color == 'white') {
+            leds[i].r = maxBrightness;
+            leds[i].g = maxBrightness;
+            leds[i].b = maxBrightness;
+        } else if(color == 'red') {
+            leds[i].r = maxBrightness;
+            leds[i].g = 0;
+            leds[i].b = 0;
+        } else if(color == 'green') {
+            leds[i].r = 0;
+            leds[i].g = maxBrightness;
+            leds[i].b = 0;
+        } else if(color == 'blue') {
+            leds[i].r = 0;
+            leds[i].g = 0;
+            leds[i].b = maxBrightness;
+        } else if(color == 'yellow') {
+            leds[i].r = maxBrightness;
+            leds[i].g = maxBrightness;
+            leds[i].b = 0;
+        } else if(color == 'cyan') {
+            leds[i].r = 0;
+            leds[i].g = maxBrightness;
+            leds[i].b = maxBrightness;
+        } else if(color == 'magenta') {
+            leds[i].r = maxBrightness;
+            leds[i].g = 0;
+            leds[i].b = maxBrightness;
+        } else if(color == 'orange') {
+            leds[i].r = maxBrightness;
+            leds[i].g = maxBrightness / 2;
+            leds[i].b = 0;
+        } else if(color == 'purple') {
+            leds[i].r = maxBrightness / 2;
+            leds[i].g = 0;
+            leds[i].b = maxBrightness;
+        } else if(color == 'pink') {
+            leds[i].r = maxBrightness;
+            leds[i].g = maxBrightness / 2;
+            leds[i].b = maxBrightness / 2;
+        }
     }
-  }
+  //}
   updateAllStrips(leds);
+  //hasChanged = true;
 }
+
+
+
 
