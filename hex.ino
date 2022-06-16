@@ -30,8 +30,9 @@ bool isMoving = false;
 void setupScript() {
   setupMotors();
   playStartupMusic();
-  MSGEQ7.begin();
-  irrecv.enableIRIn();
+  Serial.begin(9600);
+  //MSGEQ7.begin();
+  //irrecv.enableIRIn();
   LEDsoff();
 }
 
@@ -40,33 +41,19 @@ void setup() {
   setupScript();
 }
 
+int degrees[] = {30, 60, 90, 120};
+
 bool changed = false;
 int changed_count = 0;
 
-void fadeToBlackBy(int numberOfLEDs, int fadeSpeed) {
-  for(int i = 0; i < numberOfLEDs; i++) {
-    int8_t rValue = leds[i].r - 10;
-    leds[i].r = rValue;
-    int8_t gValue = leds[i].g - 10;
-    leds[i].g = gValue;
-    int8_t bValue = leds[i].b - 10;
-    leds[i].b = bValue;
-  }
-  updateAllStrips(leds);
-}
+unsigned long previousLEDMillis = 0;
+const long ledInterval = 10000; 
 
-void glitter(grb leds[], int numberOfLEDs) {
-  for(int i = 0; i < numberOfLEDs; i++) {
-    leds[i].r = 0;
-    leds[i].g = 0;
-    leds[i].b = 0;
-  }
-  int LEDToLight = random(numberOfLEDs);
-  leds[LEDToLight].r = maxBrightness;
-  leds[LEDToLight].g = maxBrightness;
-  leds[LEDToLight].b = maxBrightness;
-  updateAllStrips(leds);
-}
+int direction = 1;
+
+unsigned long previousMotorMillis = 0;
+const long motorInterval = 10000; 
+int degreesToMove;
 
 void loop() {
 
@@ -83,34 +70,75 @@ void loop() {
   //21600000 = 6 hours
   //25200000 = 7 hours
   //28800000 = 8 hours
+  //32400000 = 9 hours
 
-  if(changed == false) { 
-    for(int j = 0; j < LEDS_PER_STRIP; j++) {
-      leds[j].r = maxBrightness;
-      leds[j].g = maxBrightness;
-      leds[j].b = maxBrightness;
+  if(currentMillis - previousMotorMillis > motorInterval) {
+    previousMotorMillis = currentMillis;
+    
+    if(direction == 1) {
+      int randomColor = random(0,2);
+      degreesToMove = degrees[randomColor];
+      Serial.println("First Move");
+      Serial.println(degreesToMove);
+      Serial.println(degreesToMove * -1);
+      controllerA.rotate(degreesToMove * -1, 0, degreesToMove * -1, -degreesToMove, degreesToMove, degreesToMove, degreesToMove, degreesToMove * -1, degreesToMove, degreesToMove * -1, 0, degreesToMove);
+      direction = 0;
+    } else {
+      Serial.println("Second Move");
+      Serial.println(degreesToMove);
+      Serial.println(degreesToMove * -1);
+      controllerA.rotate(degreesToMove, 0, degreesToMove, degreesToMove, degreesToMove * -1, degreesToMove * -1, degreesToMove * -1, degreesToMove, degreesToMove * -1, degreesToMove, 0, degreesToMove * -1);
+      direction = 1;
     }
-    updateAllStrips(leds);
-    changed = true;
   }
 
-  controllerA.rotate(-60, 60, -60, 60, -60, 60, -60, 60, -60, 60, -60, 60);
-
-  delay(6000);
-
-  controllerA.rotate(60, -60, 60, -60, 60, -60, 60, -60, 60, -60, 60, -60);
-
-  delay(6000);
-
-  controllerA.rotate(-60, 60, -60, 60, -60, 60, -60, 60, -60, 60, -60, 60);
-
-  delay(6000);
-
-  controllerA.rotate(60, -60, 60, -60, 60, -60, 60, -60, 60, -60, 60, -60);
-
-  delay(2000);
-
-  //fadeToBlackBy(LEDS_PER_STRIP, 1);
-  //delay(2000);
+  if (currentMillis - previousLEDMillis >= ledInterval) {
+    previousLEDMillis = currentMillis;
+      int randomColor = random(0,11);
+      for(int i = 0; i < LEDS_PER_STRIP; i++) {
+      if(randomColor == 1) {
+          leds[i].r = maxBrightness;
+          leds[i].g = maxBrightness;
+          leds[i].b = maxBrightness;
+      } else if(randomColor == 2) {
+          leds[i].r = maxBrightness;
+          leds[i].g = 0;
+          leds[i].b = 0;
+      } else if(randomColor == 3) {
+          leds[i].r = 0;
+          leds[i].g = maxBrightness;
+          leds[i].b = 0;
+      } else if(randomColor == 4) {
+          leds[i].r = 0;
+          leds[i].g = 0;
+          leds[i].b = maxBrightness;
+      } else if(randomColor == 5) {
+          leds[i].r = maxBrightness;
+          leds[i].g = maxBrightness;
+          leds[i].b = 0;
+      } else if(randomColor == 6) {
+          leds[i].r = 0;
+          leds[i].g = maxBrightness;
+          leds[i].b = maxBrightness;
+      } else if(randomColor == 7) {
+          leds[i].r = maxBrightness;
+          leds[i].g = 0;
+          leds[i].b = maxBrightness;
+      } else if(randomColor == 8) {
+          leds[i].r = maxBrightness;
+          leds[i].g = maxBrightness / 2;
+          leds[i].b = 0;
+      } else if(randomColor == 9) {
+          leds[i].r = maxBrightness / 2;
+          leds[i].g = 0;
+          leds[i].b = maxBrightness;
+      } else if(randomColor == 10) {
+          leds[i].r = maxBrightness;
+          leds[i].g = maxBrightness / 2;
+          leds[i].b = maxBrightness / 2;
+      }
+    }
+    updateAllStrips(leds);
+  }
 
 }

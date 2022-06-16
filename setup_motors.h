@@ -89,24 +89,5 @@ extern void setupMotors() {
   stepper12.begin(RPM, MICROSTEPS);
   stepper12.setSpeedProfile(stepper12.LINEAR_SPEED, MOTOR_ACCEL, MOTOR_DECEL);
 
-
-
-  controllerA.rotate(-20, 20, -20, 20, -20, 20, -20, 20, -20, 20, -20, 20);
-
-  delay(2000);
-
-  controllerA.rotate(20, -20, 20, -20, 20, -20, 20, -20, 20, -20, 20, -20);
-
-  delay(2000);
-
-  controllerA.rotate(-20, 20, -20, 20, -20, 20, -20, 20, -20, 20, -20, 20);
-
-  delay(2000);
-
-  controllerA.rotate(20, -20, 20, -20, 20, -20, 20, -20, 20, -20, 20, -20);
-
-  delay(2000);
-  
-
   motorsPowered = true;
 }
