@@ -1,5 +1,5 @@
 ///*********************************************************/
-///********** Restasis / HEX *******************************/
+///********** Stacy *******************************/
 ///********** Art Installation Body & Soul Festival 2022
 ///********** by @jamesdelaneyie
 ///********** IT License 
@@ -8,8 +8,8 @@
 //********** Libraries & Setup Scripts *************/
 #include "arduino.h"
 
-bool projectOn = false;
-bool isMoving = false;
+//bool projectOn = false;
+//bool isMoving = false;
 
 #include "leds_setup.h"
 
@@ -78,18 +78,13 @@ void loop() {
     if(direction == 1) {
       int randomColor = random(0,2);
       degreesToMove = degrees[randomColor];
-      Serial.println("First Move");
-      Serial.println(degreesToMove);
-      Serial.println(degreesToMove * -1);
       controllerA.rotate(degreesToMove * -1, 0, degreesToMove * -1, -degreesToMove, degreesToMove, degreesToMove, degreesToMove, degreesToMove * -1, degreesToMove, degreesToMove * -1, 0, degreesToMove);
       direction = 0;
     } else {
-      Serial.println("Second Move");
-      Serial.println(degreesToMove);
-      Serial.println(degreesToMove * -1);
       controllerA.rotate(degreesToMove, 0, degreesToMove, degreesToMove, degreesToMove * -1, degreesToMove * -1, degreesToMove * -1, degreesToMove, degreesToMove * -1, degreesToMove, 0, degreesToMove * -1);
       direction = 1;
     }
+
   }
 
   if (currentMillis - previousLEDMillis >= ledInterval) {
