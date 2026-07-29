@@ -1,0 +1,4 @@
+node_modules/
+staexe-sim
+*.o
+.DS_Store
