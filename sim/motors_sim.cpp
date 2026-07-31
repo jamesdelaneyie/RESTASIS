@@ -3,7 +3,7 @@
  * so PIXI can show LEDs + steppers moving in unison.
  *********************************************************/
 #include "staexe_display.h"
-#include <cmath>
+#include <math.h>
 
 static float g_motor_start[STAEXE_MOTOR_COUNT];
 static float g_motor_target[STAEXE_MOTOR_COUNT];

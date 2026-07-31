@@ -12,27 +12,26 @@
 #include "staexe_display.h"
 #include "sim_export.h"
 
-#include <cstdio>
-#include <cstdlib>
-#include <ctime>
-#include <thread>
-#include <chrono>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
 
 static void emit_frame(unsigned long t) {
   const uint8_t* rgb = sim_leds_rgb();
-  std::fputs("{\"t\":", stdout);
-  std::fprintf(stdout, "%lu,\"leds\":[", t);
+  fputs("{\"t\":", stdout);
+  fprintf(stdout, "%lu,\"leds\":[", t);
   for (int i = 0; i < STAEXE_LEDS_PER_STRIP * 3; i++) {
-    if (i) std::fputc(',', stdout);
-    std::fprintf(stdout, "%u", (unsigned)rgb[i]);
+    if (i) fputc(',', stdout);
+    fprintf(stdout, "%u", (unsigned)rgb[i]);
   }
-  std::fputs("],\"motors\":[", stdout);
+  fputs("],\"motors\":[", stdout);
   for (int i = 0; i < STAEXE_MOTOR_COUNT; i++) {
-    if (i) std::fputc(',', stdout);
-    std::fprintf(stdout, "%.2f", staexe_motor_degrees[i]);
+    if (i) fputc(',', stdout);
+    fprintf(stdout, "%.2f", staexe_motor_degrees[i]);
   }
-  std::fputs("]}\n", stdout);
-  std::fflush(stdout);
+  fputs("]}\n", stdout);
+  fflush(stdout);
 }
 
 int main(int argc, char** argv) {
@@ -46,7 +45,7 @@ int main(int argc, char** argv) {
     if (time_scale < 0.1) time_scale = 0.1;
   }
 
-  srand((unsigned)time(nullptr));
+  srand((unsigned)time(NULL));
 
   motors_setup();
   choreography_setup();
@@ -55,20 +54,15 @@ int main(int argc, char** argv) {
   unsigned long sim_ms = 0;
   const unsigned long step_ms = 16; /* ~60 fps sim ticks */
 
-  using clock = std::chrono::steady_clock;
-  auto next = clock::now();
-
   for (;;) {
-    /* Drive choreography with scaled virtual time via a local clock.
+    /* Drive choreography with scaled virtual time.
      * arduino_shim millis() is wall time; we pass virtual time instead.
      */
     choreography_loop(sim_ms);
     emit_frame(sim_ms);
 
     sim_ms += (unsigned long)(step_ms * time_scale);
-
-    next += std::chrono::milliseconds(step_ms);
-    std::this_thread::sleep_until(next);
+    usleep((__useconds_t)(step_ms * 1000UL));
   }
 
   return 0;

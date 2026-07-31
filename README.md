@@ -12,9 +12,16 @@ Runs the **same C++ choreography** against a fake output layer; PIXI.js renders 
 
 ```bash
 cd sim
-make
 npm install
 npm start
 ```
 
 Then open http://localhost:5173
+
+On macOS, if `make` fails with missing headers (`chrono`, `cmath`, …), install Xcode CLT and point at the SDK:
+
+```bash
+xcode-select --install
+export SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
+cd sim && make clean && make
+```

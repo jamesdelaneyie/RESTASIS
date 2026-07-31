@@ -3,7 +3,6 @@
  *********************************************************/
 #include "staexe_display.h"
 #include "sim_export.h"
-#include <cstring>
 
 /* Mirrored strips: one logical frame; PIXI expands to 18 rows. */
 static uint8_t g_frame_rgb[STAEXE_LEDS_PER_STRIP * 3];
