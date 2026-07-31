@@ -29,6 +29,8 @@ const motorLayer = new Container();
 root.addChild(ledLayer);
 root.addChild(motorLayer);
 
+/** @type {Graphics[]} */
+const ledDots = [];
 /** @type {{ wrap: Container, arm: Graphics, radius: number }[]} */
 const motors = [];
 /** @type {number} */
