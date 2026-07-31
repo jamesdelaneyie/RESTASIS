@@ -15,7 +15,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <unistd.h>
 
 static void emit_frame(unsigned long t) {
   const uint8_t* rgb = sim_leds_rgb();
@@ -62,7 +61,7 @@ int main(int argc, char** argv) {
     emit_frame(sim_ms);
 
     sim_ms += (unsigned long)(step_ms * time_scale);
-    usleep((__useconds_t)(step_ms * 1000UL));
+    staexe_sleep_ms(step_ms);
   }
 
   return 0;

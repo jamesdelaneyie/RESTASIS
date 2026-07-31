@@ -11,11 +11,21 @@
 #include <stdlib.h>
 #include <math.h>
 #include <sys/time.h>
-#include <unistd.h>
+#include <time.h>
+#include <errno.h>
 
 #ifndef constrain
 #define constrain(amt, low, high) ((amt) < (low) ? (low) : ((amt) > (high) ? (high) : (amt)))
 #endif
+
+inline void staexe_sleep_ms(unsigned long ms) {
+  struct timespec req;
+  req.tv_sec = (time_t)(ms / 1000UL);
+  req.tv_nsec = (long)((ms % 1000UL) * 1000000UL);
+  while (nanosleep(&req, &req) == -1 && errno == EINTR) {
+    /* retry remaining time */
+  }
+}
 
 inline unsigned long millis() {
   static struct timeval start;
@@ -37,8 +47,7 @@ inline long random(long max) {
 }
 
 inline void delay(unsigned long ms) {
-  /* usleep is fine for short sim delays */
-  usleep((__useconds_t)(ms * 1000UL));
+  staexe_sleep_ms(ms);
 }
 
 #endif /* ARDUINO_SHIM_H */
