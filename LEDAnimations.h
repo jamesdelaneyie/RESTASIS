@@ -1,90 +1,33 @@
-extern void cylon() {
-  for(int j = 0; j < 4; j++) {
-    for (int i = 0; i < LEDS_PER_STRIP; i++) {
-        leds[i].r = j*30;
-    }
-    strip1.sendPixels(LEDS_PER_STRIP, leds);
-    strip2.sendPixels(LEDS_PER_STRIP, leds);
-    strip3.sendPixels(LEDS_PER_STRIP, leds);
-    strip4.sendPixels(LEDS_PER_STRIP, leds);
-    strip5.sendPixels(LEDS_PER_STRIP, leds);
-    strip6.sendPixels(LEDS_PER_STRIP, leds);
-    strip7.sendPixels(LEDS_PER_STRIP, leds);
-    strip8.sendPixels(LEDS_PER_STRIP, leds);
-    strip9.sendPixels(LEDS_PER_STRIP, leds);
-    strip10.sendPixels(LEDS_PER_STRIP, leds);
-    strip11.sendPixels(LEDS_PER_STRIP, leds);
-    strip12.sendPixels(LEDS_PER_STRIP, leds);
-    strip13.sendPixels(LEDS_PER_STRIP, leds);
-    strip14.sendPixels(LEDS_PER_STRIP, leds);
-    strip15.sendPixels(LEDS_PER_STRIP, leds);
-    strip16.sendPixels(LEDS_PER_STRIP, leds);
-    strip17.sendPixels(LEDS_PER_STRIP, leds);
-    strip18.sendPixels(LEDS_PER_STRIP, leds);
-    
-  }
-  for(int j = 4; j > 0; j--) {
-    for (int i = 0; i < LEDS_PER_STRIP; i++) {
-        leds[i].r = j*30;
-    }
-    strip1.sendPixels(LEDS_PER_STRIP, leds);
-    strip2.sendPixels(LEDS_PER_STRIP, leds);
-    strip3.sendPixels(LEDS_PER_STRIP, leds);
-    strip4.sendPixels(LEDS_PER_STRIP, leds);
-    strip5.sendPixels(LEDS_PER_STRIP, leds);
-    strip6.sendPixels(LEDS_PER_STRIP, leds);
-    strip7.sendPixels(LEDS_PER_STRIP, leds);
-    strip8.sendPixels(LEDS_PER_STRIP, leds);
-    strip9.sendPixels(LEDS_PER_STRIP, leds);
-    strip10.sendPixels(LEDS_PER_STRIP, leds);
-    strip11.sendPixels(LEDS_PER_STRIP, leds);
-    strip12.sendPixels(LEDS_PER_STRIP, leds);
-    strip13.sendPixels(LEDS_PER_STRIP, leds);
-    strip14.sendPixels(LEDS_PER_STRIP, leds);
-    strip15.sendPixels(LEDS_PER_STRIP, leds);
-    strip16.sendPixels(LEDS_PER_STRIP, leds);
-    strip17.sendPixels(LEDS_PER_STRIP, leds);
-    strip18.sendPixels(LEDS_PER_STRIP, leds);
-  }
+/*********************************************************
+ * STAEXE — legacy animation helpers (shim-backed)
+ *********************************************************/
+#ifndef LED_ANIMATIONS_H
+#define LED_ANIMATIONS_H
 
-  strip1.clear(LEDS_PER_STRIP);
-  strip2.clear(LEDS_PER_STRIP);
-  strip3.clear(LEDS_PER_STRIP);
-  strip4.clear(LEDS_PER_STRIP);
-  strip5.clear(LEDS_PER_STRIP);
-  strip6.clear(LEDS_PER_STRIP);
-  strip7.clear(LEDS_PER_STRIP);
-  strip8.clear(LEDS_PER_STRIP);
-  strip9.clear(LEDS_PER_STRIP);
-  strip10.clear(LEDS_PER_STRIP);
-  strip11.clear(LEDS_PER_STRIP);
-  strip12.clear(LEDS_PER_STRIP);
-  strip13.clear(LEDS_PER_STRIP);
-  strip14.clear(LEDS_PER_STRIP);
-  strip15.clear(LEDS_PER_STRIP);
-  strip16.clear(LEDS_PER_STRIP);
-  strip17.clear(LEDS_PER_STRIP);
-  strip18.clear(LEDS_PER_STRIP);
+#include "staexe_display.h"
 
+inline void cylon() {
+  for (int j = 0; j < 4; j++) {
+    for (int i = 0; i < STAEXE_LEDS_PER_STRIP; i++) {
+      staexe_leds[i].r = (uint8_t)(j * 30);
+      staexe_leds[i].g = 0;
+      staexe_leds[i].b = 0;
+    }
+    display_show();
+  }
+  for (int j = 4; j > 0; j--) {
+    for (int i = 0; i < STAEXE_LEDS_PER_STRIP; i++) {
+      staexe_leds[i].r = (uint8_t)(j * 30);
+      staexe_leds[i].g = 0;
+      staexe_leds[i].b = 0;
+    }
+    display_show();
+  }
+  display_clear();
 }
 
-extern void LEDsoff() {
-  strip1.clear(LEDS_PER_STRIP);
-  strip2.clear(LEDS_PER_STRIP);
-  strip3.clear(LEDS_PER_STRIP);
-  strip4.clear(LEDS_PER_STRIP);
-  strip5.clear(LEDS_PER_STRIP);
-  strip6.clear(LEDS_PER_STRIP);
-  strip7.clear(LEDS_PER_STRIP);
-  strip8.clear(LEDS_PER_STRIP);
-  strip9.clear(LEDS_PER_STRIP);
-  strip10.clear(LEDS_PER_STRIP);
-  strip11.clear(LEDS_PER_STRIP);
-  strip12.clear(LEDS_PER_STRIP);
-  strip13.clear(LEDS_PER_STRIP);
-  strip14.clear(LEDS_PER_STRIP);
-  strip15.clear(LEDS_PER_STRIP);
-  strip16.clear(LEDS_PER_STRIP);
-  strip17.clear(LEDS_PER_STRIP);
-  strip18.clear(LEDS_PER_STRIP);
+inline void LEDsoff() {
+  display_clear();
 }
+
+#endif /* LED_ANIMATIONS_H */

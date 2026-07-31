@@ -1,0 +1,16 @@
+{
+  "name": "staexe-sim",
+  "private": true,
+  "version": "0.1.0",
+  "description": "PIXI.js viewer for STAEXE LED + motor choreography",
+  "scripts": {
+    "prestart": "make",
+    "start": "node server.js",
+    "build:cpp": "make"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "pixi.js": "^8.6.6",
+    "ws": "^8.18.0"
+  }
+}
