@@ -12,6 +12,14 @@
 #define STAEXE_LEDS_PER_STRIP 70
 #define STAEXE_MOTOR_COUNT 12
 
+/*
+ * Physical layout (PIXI sim + installation):
+ *   6 radial arms × 2 LED strips     = strips 0..11
+ *   6 outer hexagon struts           = strips 12..17
+ *   12 motors: 2 hubs per arm (inner + outer)
+ * Firmware still mirrors one 70-pixel buffer across all strips.
+ */
+
 /* Caps brightness on-device; sim mirrors the same value for WYSIWYG */
 #ifndef STAEXE_MAX_BRIGHTNESS
 #define STAEXE_MAX_BRIGHTNESS 60

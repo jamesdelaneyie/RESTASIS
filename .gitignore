@@ -1,0 +1,9 @@
+# Ignore local build / export outputs
+/build/
+/dist/
+sim/staexe-sim
+sim/node_modules/
+*.hex
+*.elf
+*.bin
+.DS_Store

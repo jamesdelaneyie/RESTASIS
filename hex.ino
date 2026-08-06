@@ -3,7 +3,7 @@
  * Body & Soul Festival lineage / kinetic LED + stepper piece
  *********************************************************/
 
-#include "arduino.h"
+#include <Arduino.h>
 
 #include "staexe_display.h"
 #include "staexe_choreography.h"
