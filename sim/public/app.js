@@ -1,15 +1,15 @@
 /**
- * STAEXE PIXI renderer — hexagonal sculpture layout.
+ * STAEXE PIXI renderer — matches the physical hexagonal sculpture.
  *
- * Geometry (matches firmware strip count):
- *   12 motor-arm LED strips (1 per motor, aimed at centre)  = strips 0..11
- *   6 outer strut LED strips (fixed hex edges)              = strips 12..17
- *                                                           ——
- *                                                             18 × 70 LEDs
- *   12 motors in 6 pairs, one pair at each hex vertex.
+ * Frame (from photos + hex.ino):
+ *   - Pointy-top hexagon, dark radial struts hub → 6 vertices
+ *   - 6 fixed LED tubes on the outer perimeter struts
+ *   - 12 motors in pairs at the vertices; each holds an LED tube
+ *     aimed at the centre at rest (0°) so top/bottom arms lie on
+ *     the radials — the night-shot “four inner arrows” pose
  *
- * Motor-arm strips are children of each motor's rotating arm, so they
- * swing with the stepper angle from the C++ choreography frames.
+ * Strips 0..11 = motor arms (rotate with steppers)
+ * Strips 12..17 = perimeter struts (fixed)
  */
 import { Application, Container, Graphics, Text } from '/pixi/pixi.mjs';
 
@@ -18,8 +18,7 @@ const LEDS_PER_STRIP = 70;
 const MOTOR_COUNT = 12;
 const VERTEX_COUNT = 6;
 const MOTORS_PER_VERTEX = 2;
-const MOTOR_STRIP_COUNT = MOTOR_COUNT; // 12 — one strip per motor arm
-const STRUT_STRIP_COUNT = VERTEX_COUNT; // 6
+const MOTOR_STRIP_COUNT = MOTOR_COUNT;
 
 const statusEl = document.getElementById('status');
 const clockEl = document.getElementById('clock');
@@ -44,61 +43,26 @@ root.addChild(structureLayer);
 root.addChild(strutLedLayer);
 root.addChild(motorLayer);
 
-/** @type {(Graphics|null)[]} strip-major LED graphics (motor arms + struts) */
-const ledDots = [];
+/**
+ * One glowing tube per strip (photos show diffused tubes, not pixels).
+ * @type {{ g: Graphics, x0: number, y0: number, x1: number, y1: number }[]}
+ */
+const strutTubes = [];
 /**
  * @type {{
  *   wrap: Container,
  *   arm: Container,
+ *   tube: Graphics,
  *   baseAngle: number,
- *   stripIndex: number,
+ *   tubeStart: number,
+ *   tubeEnd: number,
+ *   tubeW: number,
  * }[]}
  */
 const motors = [];
+
 /** @type {number} */
-let ledRadius = 2.5;
-
-function lerp(a, b, t) {
-  return a + (b - a) * t;
-}
-
-function pointOnSegment(x0, y0, x1, y1, t) {
-  return { x: lerp(x0, x1, t), y: lerp(y0, y1, t) };
-}
-
-/** Fixed strut strip in world space (does not rotate). */
-function placeFixedStrip(x0, y0, x1, y1, stripIndex, parent) {
-  const inset = 0.06;
-  for (let i = 0; i < LEDS_PER_STRIP; i++) {
-    const t = inset + ((1 - inset * 2) * i) / (LEDS_PER_STRIP - 1);
-    const p = pointOnSegment(x0, y0, x1, y1, t);
-    const g = new Graphics();
-    g.circle(0, 0, ledRadius).fill({ color: 0x3a5246 });
-    g.x = p.x;
-    g.y = p.y;
-    parent.addChild(g);
-    ledDots[stripIndex * LEDS_PER_STRIP + i] = g;
-  }
-}
-
-/**
- * LED strip along a motor arm in local space.
- * Local +X points along the arm (toward centre when arm.rotation = baseAngle).
- */
-function placeArmStrip(arm, stripIndex, armLen) {
-  const inset = 0.08;
-  const start = armLen * inset;
-  const end = armLen * (1 - inset * 0.35);
-  for (let i = 0; i < LEDS_PER_STRIP; i++) {
-    const t = i / (LEDS_PER_STRIP - 1);
-    const g = new Graphics();
-    g.circle(0, 0, ledRadius).fill({ color: 0x3a5246 });
-    g.x = lerp(start, end, t);
-    g.y = 0;
-    arm.addChild(g);
-    ledDots[stripIndex * LEDS_PER_STRIP + i] = g;
-  }
-}
+let tubeW = 6;
 
 function layout() {
   const w = app.renderer.width;
@@ -106,71 +70,92 @@ function layout() {
   structureLayer.removeChildren();
   strutLedLayer.removeChildren();
   motorLayer.removeChildren();
-  ledDots.length = 0;
+  strutTubes.length = 0;
   motors.length = 0;
 
   const cx = w * 0.5;
   const cy = h * 0.52;
   const R = Math.min(w, h) * 0.4;
-  const hubR = Math.max(14, R * 0.07);
-  ledRadius = Math.max(2.2, Math.min(w, h) * 0.0055);
+  tubeW = Math.max(5, R * 0.028);
 
-  /** Hexagon vertices (pointy-top: first vertex at top). */
+  /** Pointy-top hexagon (vertex at 12 o’clock), as in the install photos. */
   const verts = [];
   for (let i = 0; i < VERTEX_COUNT; i++) {
     const a = (i / VERTEX_COUNT) * Math.PI * 2 - Math.PI / 2;
     verts.push({ x: cx + Math.cos(a) * R, y: cy + Math.sin(a) * R, a });
   }
 
-  /* Structure: hub + outer hex (no fixed radial beams — arms carry LEDs). */
   const structure = new Graphics();
-  structure.circle(cx, cy, hubR).fill({ color: 0x1a2820 }).stroke({ width: 2, color: 0x3ecf8e, alpha: 0.45 });
+
+  /* Radial structural struts (cables/tubing, not LEDs). */
+  for (let i = 0; i < VERTEX_COUNT; i++) {
+    const v = verts[i];
+    structure.moveTo(cx, cy).lineTo(v.x, v.y).stroke({
+      width: Math.max(4, R * 0.018),
+      color: 0x141a16,
+      alpha: 0.95,
+      cap: 'round',
+    });
+  }
+
+  /* Dark perimeter frame under the LED tubes. */
   for (let i = 0; i < VERTEX_COUNT; i++) {
     const a = verts[i];
     const b = verts[(i + 1) % VERTEX_COUNT];
     structure.moveTo(a.x, a.y).lineTo(b.x, b.y).stroke({
-      width: 2.5,
-      color: 0x24352c,
-      alpha: 0.7,
+      width: Math.max(3, R * 0.012),
+      color: 0x101410,
+      alpha: 0.9,
       cap: 'round',
     });
   }
+
+  /* Central hub box. */
+  const hub = Math.max(22, R * 0.1);
+  structure.roundRect(cx - hub * 0.7, cy - hub * 0.55, hub * 1.4, hub * 1.1, 4)
+    .fill({ color: 0x0c0e0c })
+    .stroke({ width: 1.5, color: 0x2a332c, alpha: 0.8 });
+
   structureLayer.addChild(structure);
 
-  /* Fixed LED strips along outer struts. */
+  /* Perimeter LED tubes, slightly inset so they sit on the hex edges. */
+  const inset = Math.max(4, R * 0.012);
   for (let i = 0; i < VERTEX_COUNT; i++) {
     const a = verts[i];
     const b = verts[(i + 1) % VERTEX_COUNT];
     const mx = (a.x + b.x) * 0.5;
     const my = (a.y + b.y) * 0.5;
-    const inward = Math.max(6, R * 0.022);
     const vx = cx - mx;
     const vy = cy - my;
     const vLen = Math.hypot(vx, vy) || 1;
-    const ix = (vx / vLen) * inward;
-    const iy = (vy / vLen) * inward;
-    placeFixedStrip(
-      a.x + ix,
-      a.y + iy,
-      b.x + ix,
-      b.y + iy,
-      MOTOR_STRIP_COUNT + i,
-      strutLedLayer,
-    );
+    const ix = (vx / vLen) * inset;
+    const iy = (vy / vLen) * inset;
+    /* Shorten slightly so tubes don’t swallow the motor hubs. */
+    const t0 = 0.08;
+    const t1 = 0.92;
+    const x0 = a.x + ix + (b.x - a.x) * t0;
+    const y0 = a.y + iy + (b.y - a.y) * t0;
+    const x1 = a.x + ix + (b.x - a.x) * t1;
+    const y1 = a.y + iy + (b.y - a.y) * t1;
+    const g = new Graphics();
+    strutLedLayer.addChild(g);
+    strutTubes[i] = { g, x0, y0, x1, y1 };
   }
 
   /*
-   * Motors: pairs at each hex vertex.
-   * Offset along the local tangent so the pair sits on the edge, side by side.
-   * Each motor's arm points toward the sculpture centre and carries one LED strip.
+   * Motor pairs at each vertex. Rest pose: both tubes point at the hub
+   * (0° in firmware). Top/bottom pairs then lie on the radials, matching
+   * the night photo where only the four side arms read as inner arrows.
    */
-  const bodyR = Math.max(9, R * 0.042);
-  const pairSpread = Math.max(18, R * 0.08);
-  const armLen = R * 0.72;
+  const bodyR = Math.max(7, R * 0.028);
+  const pairSpread = Math.max(10, R * 0.045);
+  const armLen = R * 0.88;
+  const tubeStart = bodyR * 1.3;
+  const tubeEnd = armLen * 0.96;
 
   for (let v = 0; v < VERTEX_COUNT; v++) {
     const vert = verts[v];
-    const inward = Math.atan2(cy - vert.y, cx - vert.x); // toward centre
+    const inward = Math.atan2(cy - vert.y, cx - vert.x);
     const tangent = inward + Math.PI / 2;
 
     for (let k = 0; k < MOTORS_PER_VERTEX; k++) {
@@ -178,57 +163,74 @@ function layout() {
       const side = k === 0 ? -1 : 1;
       const mx = vert.x + Math.cos(tangent) * pairSpread * 0.5 * side;
       const my = vert.y + Math.sin(tangent) * pairSpread * 0.5 * side;
-
-      /* Slightly different rest aim so paired arms don't perfectly overlap. */
-      const aimNudge = side * 0.12;
-      const baseAngle = inward + aimNudge;
+      const baseAngle = inward;
 
       const wrap = new Container();
       wrap.x = mx;
       wrap.y = my;
 
-      const body = new Graphics();
-      body
-        .circle(0, 0, bodyR)
-        .fill({ color: 0x24352c })
-        .stroke({ width: 2, color: 0x3ecf8e, alpha: 0.8 });
-
-      const hub = new Graphics();
-      hub.circle(0, 0, bodyR * 0.22).fill({ color: 0xd7e6dc });
-
-      /* Rotating arm: beam + LED strip (local +X = along arm toward centre). */
       const arm = new Container();
       arm.rotation = baseAngle;
 
       const beam = new Graphics();
       beam
-        .moveTo(bodyR * 0.6, 0)
-        .lineTo(armLen, 0)
-        .stroke({ width: 3, color: 0x3ecf8e, alpha: 0.85, cap: 'round' });
+        .moveTo(0, 0)
+        .lineTo(tubeStart, 0)
+        .stroke({ width: 2, color: 0x1a1f1c, cap: 'round' });
       arm.addChild(beam);
 
-      placeArmStrip(arm, mIndex, armLen);
+      const tube = new Graphics();
+      arm.addChild(tube);
+
+      const body = new Graphics();
+      body.circle(0, 0, bodyR).fill({ color: 0x121612 }).stroke({
+        width: 1.5,
+        color: 0x3a4540,
+        alpha: 0.9,
+      });
 
       const label = new Text({
         text: String(mIndex + 1),
-        style: { fill: 0x7f9a8a, fontSize: 10, fontFamily: 'IBM Plex Sans, sans-serif' },
+        style: { fill: 0x6a8074, fontSize: 10, fontFamily: 'IBM Plex Sans, sans-serif' },
       });
       label.anchor.set(0.5);
-      /* Park label outside the hex so rotating arms don't cover it. */
-      label.x = Math.cos(inward + Math.PI) * (bodyR + 14);
-      label.y = Math.sin(inward + Math.PI) * (bodyR + 14);
+      label.x = Math.cos(inward + Math.PI) * (bodyR + 13);
+      label.y = Math.sin(inward + Math.PI) * (bodyR + 13);
 
-      wrap.addChild(arm, body, hub, label);
+      wrap.addChild(arm, body, label);
       motorLayer.addChild(wrap);
 
       motors[mIndex] = {
         wrap,
         arm,
+        tube,
         baseAngle,
-        stripIndex: mIndex,
+        tubeStart,
+        tubeEnd,
+        tubeW,
       };
     }
   }
+}
+
+function paintTube(g, x0, y0, x1, y1, width, r, gv, b) {
+  g.clear();
+  const lit = r | gv | b;
+  const color = lit ? (r << 16) | (gv << 8) | b : 0x1c2822;
+  const glow = lit ? 0.35 : 0.08;
+  const coreA = lit ? 1 : 0.55;
+  g.moveTo(x0, y0).lineTo(x1, y1).stroke({
+    width: width * 2.4,
+    color,
+    alpha: glow,
+    cap: 'round',
+  });
+  g.moveTo(x0, y0).lineTo(x1, y1).stroke({
+    width,
+    color,
+    alpha: coreA,
+    cap: 'round',
+  });
 }
 
 layout();
@@ -251,38 +253,22 @@ function applyFrame(frame) {
   clockEl.textContent = `t=${Math.round(frame.t / 1000)}s`;
 }
 
-function paintLed(dot, r, g, b) {
-  if (!dot) return;
-  const color = (r << 16) | (g << 8) | b;
-  const lit = r | g | b;
-  dot.clear();
-  if (lit) {
-    dot.circle(0, 0, ledRadius * 1.35).fill({ color, alpha: 0.28 });
-    dot.circle(0, 0, ledRadius).fill({ color, alpha: 1 });
-  } else {
-    dot.circle(0, 0, ledRadius).fill({ color: 0x3a5246, alpha: 0.85 });
-  }
-}
-
 function paint() {
-  /* Colours — mirrored buffer across all strips. */
-  for (let s = 0; s < LED_STRIPS; s++) {
-    for (let i = 0; i < LEDS_PER_STRIP; i++) {
-      const o = i * 3;
-      paintLed(
-        ledDots[s * LEDS_PER_STRIP + i],
-        latest.leds[o],
-        latest.leds[o + 1],
-        latest.leds[o + 2],
-      );
-    }
+  const r = latest.leds[0];
+  const g = latest.leds[1];
+  const b = latest.leds[2];
+
+  for (let i = 0; i < strutTubes.length; i++) {
+    const t = strutTubes[i];
+    if (!t) continue;
+    paintTube(t.g, t.x0, t.y0, t.x1, t.y1, tubeW, r, g, b);
   }
 
-  /* Motor arms (and their LED strips) rotate with choreography angles. */
   for (let m = 0; m < MOTOR_COUNT; m++) {
     const motor = motors[m];
     if (!motor) continue;
     motor.arm.rotation = motor.baseAngle + (latest.motors[m] * Math.PI) / 180;
+    paintTube(motor.tube, motor.tubeStart, 0, motor.tubeEnd, 0, motor.tubeW, r, g, b);
   }
 }
 

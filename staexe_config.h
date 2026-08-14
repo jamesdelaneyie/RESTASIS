@@ -13,10 +13,12 @@
 #define STAEXE_MOTOR_COUNT 12
 
 /*
- * Physical layout (PIXI sim + installation):
- *   12 motors in pairs at the 6 hex vertices
- *   strips 0..11  — on motor arms, aimed at centre (rotate with steppers)
- *   strips 12..17 — fixed on outer hexagon struts
+ * Physical layout (photos + PIXI sim):
+ *   Pointy-top hexagon, dark radials hub → vertices
+ *   12 motors in pairs at the 6 vertices
+ *   strips 0..11  — LED tubes on motor arms; rest (0°) aims at centre
+ *   strips 12..17 — fixed tubes on outer hexagon struts
+ * Festival hex.ino moves ±30° or ±60°; motors 2 and 11 stay at 0°.
  * Firmware still mirrors one 70-pixel buffer across all strips.
  */
 
