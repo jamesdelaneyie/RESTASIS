@@ -64,6 +64,9 @@ void choreography_loop(unsigned long now_ms) {
       int choice = (int)random(4);
       degrees_to_move = k_move_choices[choice];
       const float d = (float)degrees_to_move;
+      /* Same pattern as festival hex.ino:
+       *   controllerA.rotate(-d, 0, -d, -d, d, d, d, -d, d, -d, 0, d);
+       * Motors 2 and 11 (0-based indices 1 and 10) stay put. */
       motors_rotate(
           -d, 0, -d, -d,
            d,  d,  d, -d,

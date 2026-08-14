@@ -41,7 +41,7 @@ export SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
 cd sim && make clean && make
 ```
 
-Optional: `STAEXE_TIME_SCALE=20` (default) compresses the 10s LED/motor pulse for faster iteration.
+Optional: `STAEXE_TIME_SCALE=20` compresses the 10s LED/motor pulse for faster iteration. Default is **1** (realtime, same as Mega).
 
 ## Cloud agent environment
 
