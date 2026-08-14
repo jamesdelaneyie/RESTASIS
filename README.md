@@ -5,7 +5,7 @@ Kinetic LED + stepper installation firmware (Arduino Mega 2560) with a desktop s
 ## Where things stand
 
 - **Firmware** — choreography in lean C++ (`staexe_choreography.cpp`) via a display/motor shim; Mega backends push WS2812 + SyncDriver steppers.
-- **Simulator** — same C++ loop streams frames to a PIXI viewer laid out as a **hexagon**: LEDs on the **6 radial arms** (2 strips each) and on the **6 outer struts**, with **12 motors** (2 per arm).
+- **Simulator** — same C++ loop streams frames to a PIXI viewer laid out as a **hexagon**: **12 motors in pairs at the vertices**, each holding an LED strip aimed at the centre (strips rotate with the motor arms), plus **6 fixed strut** strips on the outer edges.
 - **Mega check** — `scripts/verify-mega.sh` compiles for Mega 2560 and fails if flash/SRAM budgets are exceeded. `scripts/export-firmware.sh` packages a flash-ready sketch under `dist/STAEXE/`.
 
 ## Firmware (Arduino Mega 2560)

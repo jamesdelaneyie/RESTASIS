@@ -14,9 +14,9 @@
 
 /*
  * Physical layout (PIXI sim + installation):
- *   6 radial arms × 2 LED strips     = strips 0..11
- *   6 outer hexagon struts           = strips 12..17
- *   12 motors: 2 hubs per arm (inner + outer)
+ *   12 motors in pairs at the 6 hex vertices
+ *   strips 0..11  — on motor arms, aimed at centre (rotate with steppers)
+ *   strips 12..17 — fixed on outer hexagon struts
  * Firmware still mirrors one 70-pixel buffer across all strips.
  */
 
