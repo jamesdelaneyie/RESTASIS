@@ -5,8 +5,7 @@
  *   - Pointy-top hexagon, dark radial struts hub → 6 vertices
  *   - 6 fixed LED tubes on the outer perimeter struts
  *   - 12 motors in pairs at the vertices; each holds an LED tube
- *     aimed at the centre at rest (0°) so top/bottom arms lie on
- *     the radials — the night-shot “four inner arrows” pose
+ *     hanging straight down at rest (firmware 0°)
  *
  * Strips 0..11 = motor arms (rotate with steppers)
  * Strips 12..17 = perimeter struts (fixed)
@@ -143,9 +142,8 @@ function layout() {
   }
 
   /*
-   * Motor pairs at each vertex. Rest pose: both tubes point at the hub
-   * (0° in firmware). Top/bottom pairs then lie on the radials, matching
-   * the night photo where only the four side arms read as inner arrows.
+   * Motor pairs at each vertex. Rest pose (firmware 0°): every arm hangs
+   * straight down. Choreography then adds ±30°/±60° from that.
    */
   const bodyR = Math.max(7, R * 0.028);
   const pairSpread = Math.max(10, R * 0.045);
@@ -163,7 +161,7 @@ function layout() {
       const side = k === 0 ? -1 : 1;
       const mx = vert.x + Math.cos(tangent) * pairSpread * 0.5 * side;
       const my = vert.y + Math.sin(tangent) * pairSpread * 0.5 * side;
-      const baseAngle = inward;
+      const baseAngle = Math.PI / 2;
 
       const wrap = new Container();
       wrap.x = mx;
