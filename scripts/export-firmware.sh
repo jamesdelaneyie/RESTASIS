@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Package a flash-ready STAEXE sketch after a successful Mega verify.
 #
-# Produces:
-#   dist/STAEXE/STAEXE.ino   (+ required headers/sources)
+# Produces a flat folder Arduino IDE can open without extra libraries:
+#   dist/STAEXE/STAEXE.ino
 #   dist/STAEXE-firmware.zip
 #   dist/memory-report.txt
-#   dist/STAEXE.hex          (when available)
+#   dist/STAEXE.hex
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -15,15 +15,20 @@ export PATH="$HOME/.local/bin:${PATH:-}"
 
 DIST="$ROOT/dist"
 SKETCH="$DIST/STAEXE"
-STAGED="$ROOT/build/sketch/STAEXE"
 
 echo "==> Verify Mega compile first"
 bash "$ROOT/scripts/verify-mega.sh"
 
-echo "==> Copying verified sketch to dist/"
+echo "==> Assembling self-contained IDE sketch"
 rm -rf "$SKETCH"
-mkdir -p "$DIST"
-cp -R "$STAGED" "$SKETCH"
+mkdir -p "$SKETCH"
+
+# Sketch sources only — skip README and any local arduino-cli build/ dump
+find "$ROOT/firmware/STAEXE" -maxdepth 1 -type f ! -name 'README.md' -exec cp {} "$SKETCH/" \;
+# Flatten vendored library src/ into the sketch (includes private/ for IRremote)
+find "$ROOT/firmware/lib" -type d -name src | while read -r src; do
+  cp -R "$src/." "$SKETCH/"
+done
 
 REPORT="$DIST/memory-report.txt"
 {

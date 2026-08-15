@@ -29,9 +29,9 @@ else
 endif
 
 CXXFLAGS ?= -std=c++17 -O2 -Wall -Wextra -DSIMULATOR $(CXXFLAGS_OS)
-INCLUDES  = -I. -I..
+INCLUDES  = -I. -I../firmware/STAEXE
 
-ROOT = ..
+ROOT = ../firmware/STAEXE
 BIN  = staexe-sim
 
 .PHONY: all clean

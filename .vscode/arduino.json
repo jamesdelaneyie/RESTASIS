@@ -1,7 +1,7 @@
 {
     "configuration": "cpu=atmega2560",
     "board": "arduino:avr:mega",
-    "sketch": "hex.ino",
+    "sketch": "firmware/STAEXE/STAEXE.ino",
     "programmer": "arduino:avrisp",
     "port": "/dev/tty.usbmodem2201"
 }

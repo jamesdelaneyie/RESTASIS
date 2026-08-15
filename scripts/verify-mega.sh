@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
-# Compile STAEXE for Arduino Mega 2560 and enforce flash/SRAM budgets.
-#
-# Stages sources into build/sketch/STAEXE/ (Arduino requires matching
-# folder/.ino names), compiles, then checks memory percentages.
+# Compile firmware/STAEXE for Arduino Mega 2560 and enforce flash/SRAM budgets.
 #
 # Usage:  ./scripts/verify-mega.sh
 # Env:    STAEXE_FLASH_MAX_PCT (default 90), STAEXE_SRAM_MAX_PCT (default 80)
@@ -17,7 +14,8 @@ BOARD="${STAEXE_BOARD:-arduino:avr:mega}"
 FLASH_MAX_PCT="${STAEXE_FLASH_MAX_PCT:-90}"
 SRAM_MAX_PCT="${STAEXE_SRAM_MAX_PCT:-80}"
 BUILD_DIR="${STAEXE_BUILD_DIR:-$ROOT/build/mega}"
-SKETCH_DIR="$ROOT/build/sketch/STAEXE"
+SKETCH_DIR="$ROOT/firmware/STAEXE"
+LIBS_DIR="$ROOT/firmware/lib"
 mkdir -p "$BUILD_DIR"
 
 if ! command -v arduino-cli >/dev/null 2>&1; then
@@ -27,53 +25,13 @@ fi
 
 arduino-cli core install arduino:avr >/dev/null
 
-echo "==> Staging sketch at $SKETCH_DIR"
-rm -rf "$SKETCH_DIR"
-mkdir -p "$SKETCH_DIR"
-
-# Entry point must be STAEXE.ino inside STAEXE/
-cp "$ROOT/hex.ino" "$SKETCH_DIR/STAEXE.ino"
-
-# Firmware sources — exclude desktop sim, vendored Arduino core stubs, and
-# junk that would collide with arduino:avr (arduino.h / pins_arduino.h).
-# Copy headers + the .cpp units the sketch actually links.
-shopt -s nullglob
-for f in \
-  "$ROOT"/staexe_*.h "$ROOT"/staexe_*.cpp \
-  "$ROOT"/display_arduino.cpp "$ROOT"/motors_arduino.cpp \
-  "$ROOT"/leds_setup.h "$ROOT"/LEDAnimations.h \
-  "$ROOT"/sensors.h "$ROOT"/IR_sensor_setup.h "$ROOT"/MSGEQ_setup.h \
-  "$ROOT"/startup_melody.h "$ROOT"/pitches.h "$ROOT"/routines.h \
-  "$ROOT"/setup_motors.h \
-  "$ROOT"/BasicStepperDriver.h "$ROOT"/BasicStepperDriver.cpp \
-  "$ROOT"/MultiDriver.h "$ROOT"/MultiDriver.cpp \
-  "$ROOT"/SyncDriver.h "$ROOT"/SyncDriver.cpp \
-  "$ROOT"/FAB_LED.h \
-  "$ROOT"/MSGEQ7.h "$ROOT"/MSGEQ7.hpp \
-  "$ROOT"/IRremote.h "$ROOT"/IRremote.hpp "$ROOT"/IRremoteInt.h \
-  "$ROOT"/IRProtocol.h "$ROOT"/IRFeedbackLED.hpp \
-  "$ROOT"/IRReceive.hpp "$ROOT"/IRSend.hpp \
-  "$ROOT"/LongUnion.h \
-  "$ROOT"/TinyIRReceiver.h "$ROOT"/TinyIRReceiver.hpp \
-  "$ROOT"/digitalWriteFast.h "$ROOT"/boarddefs.h \
-  "$ROOT"/ir_*.hpp "$ROOT"/ac_LG.h "$ROOT"/ac_LG.hpp
-do
-  cp "$f" "$SKETCH_DIR/"
-done
-
-if [[ -d "$ROOT/private" ]]; then
-  mkdir -p "$SKETCH_DIR/private"
-  # Prefer private digitalWriteFast / IRTimer if present
-  cp -R "$ROOT/private/." "$SKETCH_DIR/private/"
-fi
-
 echo "==> Compiling STAEXE for $BOARD"
 set +e
 OUT="$(arduino-cli compile \
   --fqbn "$BOARD" \
+  --libraries "$LIBS_DIR" \
   --build-path "$BUILD_DIR" \
   --warnings more \
-  --export-binaries \
   "$SKETCH_DIR" 2>&1)"
 STATUS=$?
 set -e
@@ -120,4 +78,4 @@ SUMMARY="$BUILD_DIR/memory-summary.txt"
 } > "$SUMMARY"
 echo "Wrote $SUMMARY"
 
-find "$BUILD_DIR" "$SKETCH_DIR" -name '*.hex' 2>/dev/null | head -20 || true
+find "$BUILD_DIR" -name '*.hex' 2>/dev/null | head -20 || true
