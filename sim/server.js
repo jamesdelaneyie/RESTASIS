@@ -66,7 +66,7 @@ function startSim() {
   });
 }
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`STAEXE sim  http://localhost:${PORT}`);
   console.log(`time scale  ${TIME_SCALE}x (set STAEXE_TIME_SCALE to change)`);
   startSim();
