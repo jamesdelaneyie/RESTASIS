@@ -11,10 +11,11 @@ echo "==> Build C++ choreography sim"
 (cd sim && make clean && make)
 
 echo "==> Arduino CLI (Mega verify)"
+mkdir -p "$HOME/.local/bin"
+export PATH="$HOME/.local/bin:$PATH"
 if ! command -v arduino-cli >/dev/null 2>&1; then
   curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh \
     | BINDIR="$HOME/.local/bin" sh
-  export PATH="$HOME/.local/bin:$PATH"
 fi
 mkdir -p "$HOME/.arduino15"
 arduino-cli config init --overwrite 2>/dev/null || true

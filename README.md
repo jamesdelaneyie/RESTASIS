@@ -1,29 +1,25 @@
 # STAEXE
 
-Kinetic LED + stepper installation firmware (Arduino Mega 2560) with a desktop simulator.
+Kinetic LED sculpture — a hanging pointy-top hexagon of **12 NEMA 17 steppers** and **18 WS2812 tubes**, first shown at **Body & Soul Festival 2022**. Firmware runs on an **Arduino Mega 2560**; a desktop sim plays the same C++ choreography in the browser.
 
-## Where things stand
+Drop a night shot in `docs/photos/` and link it here.
 
-- **Firmware** — choreography in lean C++ (`staexe_choreography.cpp`) via a display/motor shim; Mega backends push WS2812 + SyncDriver steppers.
-- **Simulator** — same C++ loop streams frames to a PIXI viewer laid out as a **hexagon**: **12 motors in pairs at the vertices**, each holding an LED strip aimed at the centre (strips rotate with the motor arms), plus **6 fixed strut** strips on the outer edges.
-- **Mega check** — `scripts/verify-mega.sh` compiles for Mega 2560 and fails if flash/SRAM budgets are exceeded. `scripts/export-firmware.sh` packages a flash-ready sketch under `dist/STAEXE/`.
+## The piece
 
-## Firmware (Arduino Mega 2560)
+Six vertices, motor **pairs** at each corner. LED tubes ride the motor arms (aimed with the steppers) and sit on the outer struts. Mega + 12× **A4988** (24 V / ~2 A) + FAB_LED bit-bang, one 70-pixel buffer replayed to every strip so SRAM stays tiny.
 
-```bash
-# Compile + memory report (needs arduino-cli + arduino:avr core)
-./scripts/verify-mega.sh
+## Repo map
 
-# Package uploadable sketch + zip
-./scripts/export-firmware.sh
-# → dist/STAEXE/STAEXE.ino  (open this folder in Arduino IDE)
-# → dist/STAEXE-firmware.zip
-# → dist/memory-report.txt
-```
+| Path | What |
+| --- | --- |
+| [`firmware/STAEXE/`](firmware/STAEXE/) | Flash this (Mega 2560) |
+| [`firmware/lib/`](firmware/lib/) | Vendored FAB_LED + 12-axis StepperDriver fork |
+| [`sim/`](sim/) | PIXI preview of LEDs + motors |
+| [`hardware/`](hardware/) | PCB, gerbers, BOM (drop files here) |
+| [`docs/`](docs/) | Architecture + dated notes |
+| [`archive/`](archive/) | Old sketches and core stubs |
 
-Or open `hex.ino` at the repo root in the Arduino IDE (board: **Arduino Mega 2560**). CI runs the same Mega verify on every push (`.github/workflows/mega-verify.yml`) and uploads the export artifact.
-
-## Simulator
+## Look without hardware
 
 ```bash
 cd sim
@@ -31,18 +27,19 @@ npm install
 npm start
 ```
 
-Then open http://localhost:5173
+Open http://localhost:5173 — hex layout, arms hang down at rest, festival ±30°/±60° pulse at **1×** realtime (`STAEXE_TIME_SCALE=20` to hurry).
 
-On macOS, if `make` fails with missing headers:
+## Flash the Mega
 
 ```bash
-xcode-select --install
-export SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
-cd sim && make clean && make
+./scripts/verify-mega.sh       # compile + flash/SRAM budgets
+./scripts/export-firmware.sh   # dist/STAEXE/ for Arduino IDE
 ```
 
-Optional: `STAEXE_TIME_SCALE=20` compresses the 10s LED/motor pulse for faster iteration. Default is **1** (realtime, same as Mega).
+Or open `firmware/STAEXE/STAEXE.ino` with `--libraries firmware/lib`. Last check: **~7% flash / ~20% SRAM**.
 
-## Cloud agent environment
+A4988 microstep jumpers must match `#define MICROSTEPS` (1/8 on the PCB as built).
 
-`.cursor/environment.json` installs Node + Arduino CLI, builds the sim, and serves it on port **5173** for review while an agent runs.
+## Credits
+
+James Delaney — [FAB_LED](https://github.com/sonyhome/FAB_LED) (Dan Truong), [StepperDriver](https://github.com/laurb9/StepperDriver) (Laurentiu Badea, 12-motor patch in-tree), Body & Soul 2022.

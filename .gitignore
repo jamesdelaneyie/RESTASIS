@@ -1,6 +1,7 @@
 # Ignore local build / export outputs
 /build/
 /dist/
+firmware/STAEXE/build/
 sim/staexe-sim
 sim/node_modules/
 *.hex
