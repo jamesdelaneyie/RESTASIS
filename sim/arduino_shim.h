@@ -46,6 +46,12 @@ inline long random(long max) {
   return (long)(rand() % max);
 }
 
+/* Arduino random(min, max) — exclusive of max. */
+inline long random(long min, long max) {
+  if (max <= min) return min;
+  return min + (long)(rand() % (max - min));
+}
+
 inline void delay(unsigned long ms) {
   staexe_sleep_ms(ms);
 }

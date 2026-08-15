@@ -61,9 +61,13 @@ void choreography_loop(unsigned long now_ms) {
     previous_motor_ms = now_ms;
 
     if (motor_direction == 1) {
-      int choice = (int)random(4);
+      /* Festival hex.ino: random(0, 2) → only 30° or 60°, never 90/120. */
+      int choice = (int)random(0, 2);
       degrees_to_move = k_move_choices[choice];
       const float d = (float)degrees_to_move;
+      /* Same pattern as festival hex.ino:
+       *   controllerA.rotate(-d, 0, -d, -d, d, d, d, -d, d, -d, 0, d);
+       * Motors 2 and 11 (0-based indices 1 and 10) stay put. */
       motors_rotate(
           -d, 0, -d, -d,
            d,  d,  d, -d,
@@ -81,7 +85,7 @@ void choreography_loop(unsigned long now_ms) {
 
   if (now_ms - previous_led_ms >= (unsigned long)STAEXE_LED_INTERVAL_MS) {
     previous_led_ms = now_ms;
-    apply_palette((int)random(11));
+    apply_palette((int)random(0, 11));
     display_show();
   }
 }

@@ -36,9 +36,9 @@ static void emit_frame(unsigned long t) {
 int main(int argc, char** argv) {
   /* Optional: compress wall time so a 10s pulse is watchable.
    * STAEXE_TIME_SCALE=10 means 10x faster (1s wall ≈ 10s sim).
-   * Default 20 → LED/motor pulse every ~0.5s wall clock.
+   * Default 1 → same cadence as hex.ino on the Mega (10s pulses).
    */
-  double time_scale = 20.0;
+  double time_scale = 1.0;
   if (argc > 1) {
     time_scale = atof(argv[1]);
     if (time_scale < 0.1) time_scale = 0.1;

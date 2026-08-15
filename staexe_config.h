@@ -12,6 +12,16 @@
 #define STAEXE_LEDS_PER_STRIP 70
 #define STAEXE_MOTOR_COUNT 12
 
+/*
+ * Physical layout (photos + PIXI sim):
+ *   Pointy-top hexagon, dark radials hub → vertices
+ *   12 motors in pairs at the 6 vertices
+ *   strips 0..11  — LED tubes on motor arms; rest (0°) hangs straight down
+ *   strips 12..17 — fixed tubes on outer hexagon struts
+ * Festival hex.ino moves ±30° or ±60°; motors 2 and 11 stay at 0°.
+ * Firmware still mirrors one 70-pixel buffer across all strips.
+ */
+
 /* Caps brightness on-device; sim mirrors the same value for WYSIWYG */
 #ifndef STAEXE_MAX_BRIGHTNESS
 #define STAEXE_MAX_BRIGHTNESS 60

@@ -1,0 +1,40 @@
+name: mega-verify
+
+on:
+  push:
+    branches: [master, "cursor/**"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  compile-mega:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Arduino CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+          echo "$PWD/bin" >> "$GITHUB_PATH"
+
+      - name: Install AVR core
+        run: |
+          arduino-cli config init --overwrite
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr
+
+      - name: Compile + memory budgets
+        run: bash scripts/verify-mega.sh
+
+      - name: Export flash-ready sketch
+        run: bash scripts/export-firmware.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: STAEXE-firmware
+          path: |
+            dist/STAEXE-firmware.zip
+            dist/memory-report.txt
+            dist/STAEXE.hex
+          if-no-files-found: warn

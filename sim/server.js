@@ -9,7 +9,9 @@ const http = require('http');
 const { WebSocketServer } = require('ws');
 
 const PORT = process.env.PORT || 5173;
-const TIME_SCALE = process.env.STAEXE_TIME_SCALE || '20';
+/* 1 = realtime (same 10s LED/motor pulse as hex.ino on the Mega).
+ * Set STAEXE_TIME_SCALE=20 for faster desktop iteration. */
+const TIME_SCALE = process.env.STAEXE_TIME_SCALE || '1';
 const SIM_BIN = path.join(__dirname, 'staexe-sim');
 
 const app = express();
@@ -64,7 +66,7 @@ function startSim() {
   });
 }
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`STAEXE sim  http://localhost:${PORT}`);
   console.log(`time scale  ${TIME_SCALE}x (set STAEXE_TIME_SCALE to change)`);
   startSim();
